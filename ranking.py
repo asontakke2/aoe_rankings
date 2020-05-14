@@ -18,8 +18,9 @@ X_train,X_validate,y_train,y_validate=train_test_split(X,y,test_size=0.20,random
 max_iter=[100,110,120,130,140]
 C = [0.01, 0.1, 1, 10, 100, 1000]
 penalty = ['l1','l2']
+solver = ['newton-cg', 'lbfgs', 'sag', 'saga', 'liblinear']
 fit_intercept=[False]
-param_grid = dict(max_iter=max_iter,C=C, penalty=penalty, fit_intercept=fit_intercept)
+param_grid = dict(max_iter=max_iter,C=C, penalty=penalty, fit_intercept=fit_intercept, solver=solver)
 
 lr = LogisticRegression()
 grid = GridSearchCV(estimator=lr, param_grid=param_grid, cv = 3, n_jobs=-1, scoring='accuracy')
@@ -33,7 +34,8 @@ print(classification_report(y_true, y_pred))
 final_model = LogisticRegression(penalty=best_model.best_params_['penalty'],
                                  C=best_model.best_params_['C'],
                                  fit_intercept=best_model.best_params_['fit_intercept'],
-                                 max_iter=best_model.best_params_['max_iter'])
+                                 max_iter=best_model.best_params_['max_iter'],
+                                 solver=best_model.best_params_['solver'])
 
 final_model = final_model.fit(X, y)
 
@@ -67,3 +69,7 @@ print("The probability that Marc beats Sam is {0}%".format(round(result[0][0]*10
 result = final_model.predict_proba([[0,0,1,-1,0,0,-1,0,0,0,0,0,0,0,0,0,0,0,-1]])
 
 print("The probability that Marc and Sam beat Rushi is {0}%".format(round(result[0][0]*100,2)))
+
+result = final_model.predict_proba([[0,0,1,0,0,0,0,0,-1,0,0,0,0,0,0,0,0,0,0]])
+
+print("The probability that Vic beats Rushi is {0}%".format(round(result[0][0]*100,2)))
