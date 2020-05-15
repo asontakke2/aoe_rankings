@@ -13,7 +13,7 @@ df = pd.read_csv("sample_data.csv")
 X = df.loc[:, df.columns != 'Outcome']
 y = df.Outcome
 
-X_train,X_validate,y_train,y_validate=train_test_split(X,y,test_size=0.20,random_state=0)
+# X_train,X_validate,y_train,y_validate=train_test_split(X,y,test_size=0.20,random_state=0)
 
 max_iter=[100,110,120,130,140]
 C = [0.01, 0.1, 1, 10, 100, 1000]
@@ -24,12 +24,12 @@ param_grid = dict(max_iter=max_iter,C=C, penalty=penalty, fit_intercept=fit_inte
 
 lr = LogisticRegression()
 grid = GridSearchCV(estimator=lr, param_grid=param_grid, cv = 3, n_jobs=-1, scoring='accuracy')
-best_model = grid.fit(X_train, y_train)
+best_model = grid.fit(X, y)
 
 print("Best score: {0} using {1}".format(round(best_model.best_score_,2), best_model.best_params_))
 
-y_true, y_pred = y_validate, best_model.predict(X_validate)
-print(classification_report(y_true, y_pred))
+# y_true, y_pred = y_validate, best_model.predict(X_validate)
+# print(classification_report(y_true, y_pred))
 
 final_model = LogisticRegression(penalty=best_model.best_params_['penalty'],
                                  C=best_model.best_params_['C'],
