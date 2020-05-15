@@ -15,6 +15,56 @@ y = df.Outcome
 
 # X_train,X_validate,y_train,y_validate=train_test_split(X,y,test_size=0.20,random_state=0)
 
+def invert_dataframe(original_dataframe):
+    """Inverts the dataframe by simply multiplying all values by -1.
+
+    Args:
+        original_datatframe (df): The dataframe to be inverted.
+
+    Returns:
+        inverted_dataframe (df): The inverted dataframe.
+
+    """
+    inverted_dataframe = original_dataframe.multiply(-1)
+    return(inverted_dataframe)
+
+def combine_dataframe(first_dataframe, second_dataframe):
+    """Combines the dataframes. Assumes that both dataframes have the same columns
+
+    Args:
+        first_datatframe (df): The first dataframe to be combined.
+        second_datatframe (df): The second dataframe to be combined.
+
+    Returns:
+        combined_dataframe (df): The combined dataframe.
+
+    """
+    combined_dataframe = pd.concat([first_dataframe, second_dataframe])
+    return(combined_dataframe)
+
+def invert_and_combine(original_dataframe):
+    """Inverts and combines the dataframes. Assumes that both dataframes have the same columns
+
+    Args:
+        original_dataframe (df): The dataframe to be inverted and combined with the original.
+
+    Returns:
+        new_dataframe (df): The combined dataframe.
+
+    """
+    inverted_dataframe = invert_dataframe(original_dataframe)
+    new_dataframe = combine_dataframe(original_dataframe, inverted_dataframe)
+    return(new_dataframe)
+
+X = invert_and_combine(X)
+y = invert_and_combine(y)
+
+# These are commented out because we are not using a validation set
+# X_train = invert_and_combine(X_train)
+# X_validate = invert_and_combine(X_validate)
+# y_train = invert_and_combine(y_train)
+# y_validate = invert_and_combine(y_validate)
+
 max_iter=[100,110,120,130,140]
 C = [0.01, 0.1, 1, 10, 100, 1000]
 penalty = ['l1','l2']
@@ -23,7 +73,7 @@ fit_intercept=[False]
 param_grid = dict(max_iter=max_iter,C=C, penalty=penalty, fit_intercept=fit_intercept, solver=solver)
 
 lr = LogisticRegression()
-grid = GridSearchCV(estimator=lr, param_grid=param_grid, cv = 3, n_jobs=-1, scoring='accuracy')
+grid = GridSearchCV(estimator=lr, param_grid=param_grid, cv = 5, n_jobs=-1, scoring='accuracy')
 best_model = grid.fit(X, y)
 
 print("Best score: {0} using {1}".format(round(best_model.best_score_,2), best_model.best_params_))
