@@ -59,11 +59,6 @@ def invert_and_combine(original_dataframe):
 X = invert_and_combine(X)
 y = invert_and_combine(y)
 
-# These are commented out because we are not using a validation set
-# X_train = invert_and_combine(X_train)
-# X_validate = invert_and_combine(X_validate)
-# y_train = invert_and_combine(y_train)
-# y_validate = invert_and_combine(y_validate)
 
 C = [0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0]
 penalty = ['l2']
@@ -72,30 +67,41 @@ fit_intercept=[False]
 param_grid = dict(C=C, penalty=penalty, fit_intercept=fit_intercept, solver=solver)
 
 lr = LogisticRegression()
-grid = GridSearchCV(estimator=lr, param_grid=param_grid, cv = 5, n_jobs=-1, scoring='accuracy')
-best_model = grid.fit(X, y)
+grid = GridSearchCV(estimator=lr, param_grid=param_grid, cv = 3, n_jobs=-1, scoring='accuracy')
+best_model_from_cv = grid.fit(X, y)
 
-print("Best score: {0} using {1}".format(round(best_model.best_score_,2), best_model.best_params_))
+print("Best model according to grid search: {0} using {1}".format(round(best_model_from_cv.best_score_,2), best_model_from_cv.best_params_))
 
-means = best_model.cv_results_['mean_test_score']
-stds = best_model.cv_results_['std_test_score']
-for mean, std, params in zip(means, stds, best_model.cv_results_['params']):
-    print("%0.3f (+/-%0.03f) for %r"
-          % (mean, std * 2, params))
+# https://scikit-learn.org/stable/auto_examples/model_selection/plot_grid_search_digits.html
+means = best_model_from_cv.cv_results_['mean_test_score']
+stds = best_model_from_cv.cv_results_['std_test_score']
+for mean, std, params in zip(means, stds, best_model_from_cv.cv_results_['params']):
+    print("{0:.3f} (+/-{1:.3f}) for {2}".format(mean, std * 2, params))
+    
+# TODO: clean this up
+target_accuracy = best_model_from_cv.cv_results_['mean_test_score'][best_model_from_cv.best_index_] - best_model_from_cv.cv_results_['std_test_score'][best_model_from_cv.best_index_]
+target_index = best_model_from_cv.best_index_
+for i, score in enumerate(best_model_from_cv.cv_results_['mean_test_score']):
+    if(score > target_accuracy and i < target_index):
+        target_index = i
+        print("Found better model: {0:.3f} (+/-{1:.3f}) using {2}".format(best_model_from_cv.cv_results_['mean_test_score'][target_index],2*best_model_from_cv.cv_results_['std_test_score'][target_index], best_model_from_cv.cv_results_['params'][target_index]))
+        break
+        
+best_model_parameters = best_model_from_cv.cv_results_['params'][target_index]
 
-# y_true, y_pred = y_validate, best_model.predict(X_validate)
-# print(classification_report(y_true, y_pred))
+# TODO: must be a cleaner way to import GridSearchCV into LogisticRegression
+final_model_with_all_data = LogisticRegression(penalty=best_model_parameters['penalty'], 
+                                 C=best_model_parameters['C'],
+                                 fit_intercept=best_model_parameters['fit_intercept'],
+                                 solver=best_model_parameters['solver'])
 
-final_model = LogisticRegression(penalty=best_model.best_params_['penalty'],
-                                 C=best_model.best_params_['C'],
-                                 fit_intercept=best_model.best_params_['fit_intercept'],
-                                 solver=best_model.best_params_['solver'])
+final_model_with_all_data = final_model_with_all_data.fit(X, y)
 
-final_model = final_model.fit(X, y)
+final_model_with_all_data = final_model_with_all_data.fit(X, y)
 
 features = list(df.columns)
 features.remove("Outcome")
-[coef] = final_model.coef_.tolist()
+[coef] = final_model_with_all_data.coef_.tolist()
 
 rounded_coef = []
 for number in coef:
@@ -105,25 +111,26 @@ for number in coef:
 x = zip(rounded_coef, features)
 print(sorted(list(x)))
 
-result = final_model.predict_proba([[0,0,1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]])
+result = final_model_with_all_data.predict_proba([[0,0,1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]])
 
 print("The probability that Marc beats Rushi is {0}%".format(round(result[0][0]*100,2)))
 
-result = final_model.predict_proba([[-1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]])
+result = final_model_with_all_data.predict_proba([[-1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]])
 
 print("The probability that Shaq beats Gray is {0}%".format(round(result[0][0]*100,2)))
 
-result = final_model.predict_proba([[-1,-1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1]])
+result = final_model_with_all_data.predict_proba([[-1,-1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1]])
 
 print("The probability that Shaq and Gray beat Rushi is {0}%".format(round(result[0][0]*100,2)))
-result = final_model.predict_proba([[0,0,0,-1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]])
+
+result = final_model_with_all_data.predict_proba([[0,0,0,-1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]])
 
 print("The probability that Marc beats Sam is {0}%".format(round(result[0][0]*100,2)))
 
-result = final_model.predict_proba([[0,0,1,-1,0,0,-1,0,0,0,0,0,0,0,0,0,0,0,-1]])
+result = final_model_with_all_data.predict_proba([[0,0,1,-1,0,0,-1,0,0,0,0,0,0,0,0,0,0,0,-1]])
 
 print("The probability that Marc and Sam beat Rushi is {0}%".format(round(result[0][0]*100,2)))
 
-result = final_model.predict_proba([[0,0,1,0,0,0,0,0,-1,0,0,0,0,0,0,0,0,0,0]])
+result = final_model_with_all_data.predict_proba([[0,0,1,0,0,0,0,0,-1,0,0,0,0,0,0,0,0,0,0]])
 
 print("The probability that Vic beats Rushi is {0}%".format(round(result[0][0]*100,2)))
