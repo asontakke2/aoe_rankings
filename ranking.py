@@ -8,6 +8,7 @@ This file is used to streamline script execution from the command line.
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV, train_test_split
+import numpy as np
 
 df = pd.read_csv("sample_data.csv")
 
@@ -63,7 +64,7 @@ X = invert_and_combine(X)
 y = invert_and_combine(y)
 
 
-C = [0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0]
+C = np.logspace(-1,4,1000)
 penalty = ['l2']
 solver = ['liblinear']
 fit_intercept = [False]
@@ -72,11 +73,6 @@ param_grid = dict(C=C, penalty=penalty, fit_intercept=fit_intercept, solver=solv
 lr = LogisticRegression()
 grid = GridSearchCV(estimator=lr, param_grid=param_grid, cv=3, n_jobs=-1, scoring='accuracy')
 cross_validation_models = grid.fit(X, y)
-
-means = cross_validation_models.cv_results_['mean_test_score']
-stds = cross_validation_models.cv_results_['std_test_score']
-for mean, std, params in zip(means, stds, cross_validation_models.cv_results_['params']):
-    print("{0:.3f} (+/-{1:.3f}) for {2}".format(mean, std * 2, params))
 
 print("Best model according to grid search: {0} using {1}".format(
     round(cross_validation_models.best_score_, 2), cross_validation_models.best_params_))
