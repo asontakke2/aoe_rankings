@@ -1,4 +1,4 @@
-Shaq,Gray,Rushi,Marc,Peter,Pat,Sam,Ori,Vic,Ardy,Chad,Pat_Jr,Pat_Jr_Jr,Matt_M,Ben,Mikey,Evan,Medium_AI,Extra_Team,Outcome
+Shaq,Gray,Rushi,Marc,Peter,Pat,Sam,Ori,Vic,Ardy,Chad,Pat_Jr,Rory,Matt_M,Ben,Mikey,Evan,Medium_AI,Extra_Team,Outcome
 1,0,-1,-1,1,0,-1,0,0,0,0,0,0,0,0,0,0,0,-1,-1
 1,0,-1,0,-1,1,-1,1,0,0,0,0,0,0,0,0,0,0,0,-1
 -1,1,0,0,1,-1,0,1,0,0,0,0,0,0,0,0,0,0,1,1
@@ -78,3 +78,6 @@ Shaq,Gray,Rushi,Marc,Peter,Pat,Sam,Ori,Vic,Ardy,Chad,Pat_Jr,Pat_Jr_Jr,Matt_M,Ben
 1,1,0,0,0,0,0,0,-1,-1,0,0,0,-1,0,0,0,1,0,-1
 1,-1,0,-1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
 1,-1,0,0,0,0,0,0,-1,1,0,0,0,1,0,0,0,0,1,1
+1,0,0,-1,0,1,0,0,-1,0,0,0,1,-1,0,0,0,0,0,-1
+1,0,0,1,0,1,0,0,-1,-1,0,0,1,-1,0,0,0,0,1,-1
+1,0,0,0,0,-1,0,0,1,-1,0,0,-1,1,0,0,-1,0,-1,-1
