@@ -3,4 +3,6 @@
 venv/
 .DS_Store
 .idea/
-.pyc
+__pycache__/
+*.py[cod]
+*$py.class

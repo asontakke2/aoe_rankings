@@ -9,6 +9,7 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV, train_test_split
 import numpy as np
+from models.utilities.predictions import make_predictions
 
 df = pd.read_csv("data/sample_data.csv")
 
@@ -161,26 +162,4 @@ for number in coef:
 x = zip(rounded_coef, features)
 print("Final model coefficients are: {0}".format(sorted(list(x))))
 
-result = final_model_with_all_data.predict_proba(
-    [[0, 0, 1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
-print("The probability that Marc beats Rushi is {0}%".format(round(result[0][0]*100, 2)))
-
-result = final_model_with_all_data.predict_proba(
-    [[-1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
-print("The probability that Shaq beats Gray is {0}%".format(round(result[0][0]*100, 2)))
-
-result = final_model_with_all_data.predict_proba(
-    [[-1, -1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1]])
-print("The probability that Shaq and Gray beat Rushi is {0}%".format(round(result[0][0]*100, 2)))
-
-result = final_model_with_all_data.predict_proba(
-    [[0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
-print("The probability that Marc beats Sam is {0}%".format(round(result[0][0]*100, 2)))
-
-result = final_model_with_all_data.predict_proba(
-    [[0, 0, 1, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1]])
-print("The probability that Marc and Sam beat Rushi is {0}%".format(round(result[0][0]*100, 2)))
-
-result = final_model_with_all_data.predict_proba(
-    [[0, 0, 1, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
-print("The probability that Vic beats Rushi is {0}%".format(round(result[0][0]*100, 2)))
+make_predictions(final_model_with_all_data)
