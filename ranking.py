@@ -10,7 +10,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV, train_test_split
 import numpy as np
 
-df = pd.read_csv("Data/sample_data.csv")
+df = pd.read_csv("data/sample_data.csv")
 
 X = df.loc[:, df.columns != 'Outcome']
 y = df.Outcome
